@@ -1,0 +1,72 @@
+<!-- templates/layout.html -->
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Trang quản trị</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        display: flex;
+        min-height: 100vh;
+      }
+      .sidebar {
+        width: 220px;
+        background-color: #2c3e50;
+        color: white;
+        padding: 20px;
+        box-sizing: border-box;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+      }
+      .sidebar h2 {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: #ecf0f1;
+      }
+      .sidebar a {
+        display: block;
+        color: white;
+        text-decoration: none;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+      .sidebar a:hover {
+        background-color: #34495e;
+      }
+      .main-content {
+        margin-left: 240px;
+        padding: 20px;
+        flex: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>Chức năng</h2>
+      <a th:href="@{/home}">Trang chủ</a>
+      <a th:href="@{/san-pham/view}">Danh sách sản phẩm</a>
+      <a th:href="@{/ban-hang/view}">Bán hàng</a>
+      <a th:href="@{/danh-muc/view}">Thuộc tính</a>
+      // tạo ra sidebar tất cả các thuộc tính
+      <a th:href="@{/thuong-hieu/view}">Quản lý khuyến mãi</a>
+      <a th:href="@{/chat-lieu/view}">Quản lý voucher</a>
+      <a th:href="@{/kieu-day/view}">Quản lý hóa đơn</a>
+      <a th:href="@{/loai-khoa/view}">Thông kê</a>
+    </div>
+
+    <!-- Nơi nội dung từng trang được hiển thị -->
+    <div class="main-content" layout:fragment="content">
+      <!-- Nội dung mặc định nếu không có trang con -->
+      <p>Chào mừng bạn đến hệ thống quản trị.</p>
+    </div>
+  </body>
+</html>

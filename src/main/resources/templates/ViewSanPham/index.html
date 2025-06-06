@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{view/layout}">
+  <head>
+    <title>Danh sách Sản phẩm</title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <h1 style="text-align: center;">Danh sách Sản phẩm</h1>
+
+      <table border="1" style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Hình ảnh</th>
+            <th>Mã</th>
+            <th>Tên</th>
+            <th>Thương hiệu</th>
+            <th>Danh mục</th>
+            <th>Chất liệu</th>
+            <th>Loại khóa</th>
+            <th>Kiểu dây</th>
+            <th>Trạng Thái</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="sp : ${sanPhams}">
+            <td th:text="${sp.id}"></td>
+            <td>
+              <div th:each="img : ${sp.hinhAnhUrls}">
+                <img th:src="@{'/images/' + ${img}}"
+                     style="width: 100px; height: auto; margin: 5px;" />
+              </div>
+            </td>
+            <td th:text="${sp.ma}"></td>
+            <td th:text="${sp.ten}"></td>
+            <td th:text="${sp.tenThuongHieu}"></td>
+            <td th:text="${sp.tenDanhMuc}"></td>
+            <td th:text="${sp.tenChatLieu}"></td>
+            <td th:text="${sp.tenLoaiKhoa}"></td>
+            <td th:text="${sp.tenKieuDay}"></td>
+            <td th:text="${sp.trangThai ? 'Đang bán' : 'Ngừng bán'}"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
