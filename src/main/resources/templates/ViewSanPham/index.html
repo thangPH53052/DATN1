@@ -9,10 +9,15 @@
     <div layout:fragment="content">
       <h1 style="text-align: center;">Danh sách Sản phẩm</h1>
 
+      <!-- Nút thêm sản phẩm -->
+      <div style="text-align: right; margin-bottom: 10px;">
+        <a th:href="@{/san-pham/add}" class="btn btn-primary">Thêm Sản phẩm</a>
+      </div>
+
       <table border="1" style="width: 100%; border-collapse: collapse;">
         <thead>
           <tr>
-            <th>ID</th>
+            <th>STT</th>
             <th>Hình ảnh</th>
             <th>Mã</th>
             <th>Tên</th>
@@ -21,16 +26,23 @@
             <th>Chất liệu</th>
             <th>Loại khóa</th>
             <th>Kiểu dây</th>
+            <th>Mô tả</th>
+            <th>Trọng lượng</th>
+            <th>Dung tích</th>
+            <th>Kích thước</th>
             <th>Trạng Thái</th>
           </tr>
         </thead>
         <tbody>
-          <tr th:each="sp : ${sanPhams}">
-            <td th:text="${sp.id}"></td>
+          <tr th:each="sp, iterStat : ${sanPhams}">
+            <td th:text="${iterStat.index + 1}"></td>
             <td>
-              <div th:each="img : ${sp.hinhAnhUrls}">
-                <img th:src="@{'/images/' + ${img}}"
+              <div th:if="${#lists.size(sp.hinhAnhUrls) > 0}">
+                <img th:src="@{'/images/' + ${sp.hinhAnhUrls[0]}}" 
                      style="width: 100px; height: auto; margin: 5px;" />
+              </div>
+              <div th:if="${#lists.isEmpty(sp.hinhAnhUrls)}">
+                <span>Không có ảnh</span>
               </div>
             </td>
             <td th:text="${sp.ma}"></td>
@@ -40,6 +52,10 @@
             <td th:text="${sp.tenChatLieu}"></td>
             <td th:text="${sp.tenLoaiKhoa}"></td>
             <td th:text="${sp.tenKieuDay}"></td>
+            <td th:text="${sp.moTa}"></td>
+            <td th:text="${sp.canNang}"></td>
+            <td th:text="${sp.dungTich}"></td>
+            <td th:text="${sp.kichThuoc}"></td>
             <td th:text="${sp.trangThai ? 'Đang bán' : 'Ngừng bán'}"></td>
           </tr>
         </tbody>

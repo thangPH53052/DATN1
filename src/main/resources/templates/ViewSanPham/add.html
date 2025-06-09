@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{view/layout}">
+  <head>
+    <title>Thêm sản phẩm</title>
+  </head>
+  <body>
+    <div layout:fragment="content">
+      <h1 style="text-align: center;">Thêm sản phẩm mới</h1>
+
+      <form th:action="@{/san-pham/save}" method="post" enctype="multipart/form-data" style="width: 60%; margin: auto">
+
+        <!-- Mã sản phẩm -->
+        <div>
+          <label>Mã sản phẩm:</label>
+          <input type="text" name="ma" required style="width: 100%"/>
+        </div>
+
+        <!-- Tên sản phẩm -->
+        <div>
+          <label>Tên sản phẩm:</label>
+          <input type="text" name="ten" required style="width: 100%"/>
+        </div>
+
+        <!-- Danh mục -->
+        <div>
+          <label>Danh mục:</label>
+          <select name="idDanhMuc" required style="width: 100%">
+            <option value="">-- Chọn danh mục --</option>
+            <option th:each="dm : ${danhMucs}" th:value="${dm.id}" th:text="${dm.ten}"></option>
+          </select>
+        </div>
+
+        <!-- Chất liệu -->
+        <div>
+          <label>Chất liệu:</label>
+          <select name="idChatLieu" required style="width: 100%">
+            <option value="">-- Chọn chất liệu --</option>
+            <option th:each="cl : ${chatLieus}" th:value="${cl.id}" th:text="${cl.ten}"></option>
+          </select>
+        </div>
+
+        <!-- Loại khóa -->
+        <div>
+          <label>Loại khóa:</label>
+          <select name="idLoaiKhoa" required style="width: 100%">
+            <option value="">-- Chọn loại khóa --</option>
+            <option th:each="lk : ${loaiKhoas}" th:value="${lk.id}" th:text="${lk.ten}"></option>
+          </select>
+        </div>
+
+        <!-- Kiểu dây -->
+        <div>
+          <label>Kiểu dây:</label>
+          <select name="idKieuDay" required style="width: 100%">
+            <option value="">-- Chọn kiểu dây --</option>
+            <option th:each="kd : ${kieuDays}" th:value="${kd.id}" th:text="${kd.ten}"></option>
+          </select>
+        </div>
+
+        <!-- Thương hiệu -->
+        <div>
+          <label>Thương hiệu:</label>
+          <select name="idThuongHieu" required style="width: 100%">
+            <option value="">-- Chọn thương hiệu --</option>
+            <option th:each="th : ${thuongHieus}" th:value="${th.id}" th:text="${th.ten}"></option>
+          </select>
+        </div>
+
+        <!-- Mô tả -->
+        <div>
+          <label>Mô tả:</label>
+          <textarea name="moTa" rows="3" style="width: 100%"></textarea>
+        </div>
+
+        <!-- Trọng lượng -->
+        <div>
+          <label>Trọng lượng (Kg):</label>
+          <input type="number" name="canNang" step="0.01" style="width: 100%"/>
+        </div>
+
+        <!-- Dung tích -->
+        <div>
+          <label>Dung tích (Lít):</label>
+          <input type="number" name="dungTich" step="0.01" style="width: 100%"/>
+        </div>
+
+        <!-- Kích thước -->
+        <div>
+          <label>Kích thước:</label>
+          <input type="text" name="kichThuoc" style="width: 100%"/>
+        </div>
+
+        <!-- Trạng thái -->
+        <div>
+          <label>Trạng thái:</label>
+          <select name="trangThai" style="width: 100%">
+            <option value="true">Đang bán</option>
+            <option value="false">Ngừng bán</option>
+          </select>
+        </div>
+
+        <!-- Hình ảnh -->
+        <div>
+          <label>Hình ảnh (chọn nhiều ảnh):</label>
+          <input type="file" name="hinhAnhs" multiple />
+
+        </div>
+
+        <br/>
+        <div style="text-align: center;">
+          <button type="submit">Lưu sản phẩm</button>
+        </div>
+
+      </form>
+    </div>
+  </body>
+</html>
