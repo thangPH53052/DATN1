@@ -17,6 +17,9 @@ public class SanPhamChiTiet {
     private Integer soLuong;
     private Double giaBan;
 
+    @Column(nullable = false) // ✅ THÊM
+    private Double giaNhap;
+
     @ManyToOne
     @JoinColumn(name = "idSanPham")
     private SanPham sanPham;
@@ -33,3 +36,4 @@ public class SanPhamChiTiet {
     @JoinColumn(name = "idKhuyenMai")
     private KhuyenMai khuyenMai;
 }
+

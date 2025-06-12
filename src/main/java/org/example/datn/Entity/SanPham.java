@@ -64,4 +64,9 @@ public class SanPham {
 
     @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY)
     private List<HinhAnhSanPham> hinhAnhList;
+
+    public SanPham(Integer id) {
+        this.id = id;
+    }
+
 }

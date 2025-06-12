@@ -25,4 +25,9 @@ public class MauSac {
 
     @OneToMany(mappedBy = "mauSac")
     private List<SanPhamChiTiet> chiTietList;
+
+    public MauSac(Integer id) {
+    this.id = id;
+}
+
 }

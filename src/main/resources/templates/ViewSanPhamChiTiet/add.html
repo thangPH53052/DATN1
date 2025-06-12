@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Thêm chi tiết sản phẩm</title>
+    <meta charset="UTF-8" />
+  </head>
+  <body>
+    <h2 style="text-align: center">
+      Thêm chi tiết cho sản phẩm: <span th:text="${tenSanPham}"></span>
+    </h2>
+
+    <form th:action="@{/san-pham-chi-tiet/save-multiple}" method="post">
+      <input type="hidden" name="idSanPham" th:value="${sanPham.id}" />
+
+      <div id="chiTietContainer">
+        <div
+          class="chi-tiet-row"
+          style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px"
+        >
+          <label>Màu sắc:</label>
+          <select name="idMauSac[]" required>
+            <option th:each="m : ${mauSacs}" th:value="${m.id}" th:text="${m.ten}"></option>
+          </select>
+
+          <label>Kích thước:</label>
+          <select name="idKichThuoc[]" required>
+            <option th:each="k : ${kichThuocs}" th:value="${k.id}" th:text="${k.ten}"></option>
+          </select>
+
+          <label>Khuyến mãi:</label>
+          <select name="idKhuyenMai[]">
+            <option value="">Không áp dụng</option>
+            <option th:each="km : ${khuyenMais}" th:value="${km.id}" th:text="${km.ten}"></option>
+          </select>
+
+          <label>Giá bán:</label>
+          <input type="number" name="giaBan[]" step="0.01" required />
+
+          <label>Giá nhập:</label>
+          <input type="number" name="giaNhap[]" step="0.01" required />
+
+          <label>Số lượng:</label>
+          <input type="number" name="soLuong[]" required />
+
+          <button type="button" class="xoa-dong-btn" style="margin-left: 10px">Xóa</button>
+        </div>
+      </div>
+
+      <div style="margin-top: 15px; text-align: center">
+        <button type="button" id="addRowBtn">+ Thêm dòng</button>
+        <button type="submit">Lưu tất cả</button>
+      </div>
+    </form>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        function initChiTietHandlers() {
+          const container = document.getElementById("chiTietContainer");
+          if (!container || container.dataset.bound === "true") return;
+          container.dataset.bound = "true";
+
+          document.getElementById("addRowBtn")?.addEventListener("click", function () {
+            const row = container.querySelector(".chi-tiet-row");
+            if (!row) return alert("Không tìm thấy dòng mẫu!");
+
+            const newRow = row.cloneNode(true);
+            newRow.querySelectorAll("input, select").forEach((el) => {
+              if (el.tagName === "SELECT") el.selectedIndex = 0;
+              else el.value = "";
+            });
+            container.appendChild(newRow);
+          });
+
+          container.addEventListener("click", function (e) {
+            if (e.target.classList.contains("xoa-dong-btn")) {
+              const rows = container.querySelectorAll(".chi-tiet-row");
+              if (rows.length > 1) {
+                e.target.closest(".chi-tiet-row").remove();
+              } else {
+                alert("Phải có ít nhất 1 dòng!");
+              }
+            }
+          });
+        }
+
+        // Gọi khi trang được load lần đầu hoặc sau khi fetch fragment ajax
+        window.initChiTietHandlers = initChiTietHandlers;
+        initChiTietHandlers();
+      });
+    </script>
+  </body>
+</html>

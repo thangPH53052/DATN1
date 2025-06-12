@@ -1,0 +1,35 @@
+<!-- ViewSanPham/fragment_form_chi_tiet.html -->
+<div th:fragment="formChiTiet">
+  <form th:action="@{/san-pham-chi-tiet/save}" method="post">
+    <input type="hidden" name="sanPhamId" th:value="${sanPhamId}" />
+    
+    <label>Màu sắc:</label>
+    <select name="idMauSac">
+      <option th:each="m : ${mauSacs}" th:value="${m.id}" th:text="${m.ten}"></option>
+    </select><br />
+
+    <label>Kích thước:</label>
+    <select name="idKichThuoc">
+      <option th:each="k : ${kichThuocs}" th:value="${k.id}" th:text="${k.ten}"></option>
+    </select><br />
+
+    <label>Khuyến mãi:</label>
+    <select name="idKhuyenMai">
+      <option value="">Không áp dụng</option>
+      <option th:each="km : ${khuyenMais}" th:value="${km.id}" th:text="${km.ten}"></option>
+    </select><br />
+
+    <label>Giá bán:</label>
+    <input type="number" name="giaBan" step="0.01" /><br />
+
+    <label>Giá nhập:</label>
+    <input type="number" name="giaNhap" step="0.01" /><br />
+
+    <label>Số lượng:</label>
+    <input type="number" name="soLuong" /><br />
+
+    <div style="margin-top: 20px; text-align: center">
+      <button type="submit">Lưu chi tiết</button>
+    </div>
+  </form>
+</div>

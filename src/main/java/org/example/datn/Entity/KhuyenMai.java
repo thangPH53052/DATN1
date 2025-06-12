@@ -25,4 +25,9 @@ public class KhuyenMai {
 
     @OneToMany(mappedBy = "khuyenMai")
     private List<SanPhamChiTiet> chiTietList;
+
+    public KhuyenMai(Integer id) {
+    this.id = id;
+}
+
 }

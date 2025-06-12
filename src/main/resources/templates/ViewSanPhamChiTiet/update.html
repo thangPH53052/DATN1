@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Chỉnh sửa sản phẩm chi tiết</title>
+    <meta charset="UTF-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        form {
+            max-width: 900px;
+            margin: auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .chi-tiet-item {
+            border: 1px solid #ccc;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #fff;
+        }
+        label {
+            display: inline-block;
+            width: 120px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+        select, input[type="number"] {
+            width: calc(100% - 130px);
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 14px;
+            margin-top: 20px;
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+    </style>
+</head>
+<body>
+<h2>Chỉnh sửa chi tiết sản phẩm</h2>
+<form th:action="@{/san-pham-chi-tiet/update-multiple}" method="post">
+    <div th:each="ct : ${chiTiets}" class="chi-tiet-item">
+        <input type="hidden" name="chiTietIds" th:value="${ct.id}" />
+
+        <label>Màu sắc:</label>
+        <select name="idMauSac">
+            <option th:each="m : ${mauSacs}" th:value="${m.id}" th:selected="${m.id == ct.mauSac.id}" th:text="${m.ten}"></option>
+        </select><br/>
+
+        <label>Kích thước:</label>
+        <select name="idKichThuoc">
+            <option th:each="k : ${kichThuocs}" th:value="${k.id}" th:selected="${k.id == ct.kichThuoc.id}" th:text="${k.ten}"></option>
+        </select><br/>
+
+        <label>Khuyến mãi:</label>
+        <select name="idKhuyenMai">
+            <option value="">Không áp dụng</option>
+            <option th:each="km : ${khuyenMais}" th:value="${km.id}" th:selected="${ct.khuyenMai != null and km.id == ct.khuyenMai.id}" th:text="${km.ten}"></option>
+        </select><br/>
+
+        <label>Giá bán:</label>
+        <input type="number" name="giaBan" step="0.01" th:value="${ct.giaBan}" /><br/>
+
+        <label>Giá nhập:</label>
+        <input type="number" name="giaNhap" step="0.01" th:value="${ct.giaNhap}" /><br/>
+
+        <label>Số lượng:</label>
+        <input type="number" name="soLuong" th:value="${ct.soLuong}" /><br/>
+    </div>
+
+    <div style="text-align: center;">
+        <button type="submit">Cập nhật toàn bộ</button>
+        <a th:href="@{/san-pham/view}"><button type="button">Quay lại danh sách</button></a>
+    </div>
+</form>
+</body>
+</html>

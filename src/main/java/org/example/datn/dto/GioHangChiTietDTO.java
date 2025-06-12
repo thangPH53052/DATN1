@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GioHangChiTietDTO {
-    private Integer id;
+    private Integer id; 
     private Integer soLuong;
     private Integer idGioHang;
     private Integer idSanPhamChiTiet;
