@@ -1,5 +1,7 @@
 package org.example.datn.Entity;
 
+import java.time.LocalDateTime;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,10 +17,12 @@ public class GioHangChiTiet {
     private Integer id;
 
     private Integer soLuong;
+    private LocalDateTime ngayThem;
+    private Boolean trangThai;
 
     @ManyToOne
-    @JoinColumn(name = "idGioHang")
-    private GioHang gioHang;
+    @JoinColumn(name = "idKhachHang")
+    private KhachHang khachHang;
 
     @ManyToOne
     @JoinColumn(name = "idSanPhamChiTiet")

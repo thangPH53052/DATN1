@@ -44,7 +44,7 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
+    
         <!-- DevTools for Live Reload -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -52,6 +52,13 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
+        <dependency>
+        <!-- Mapper -->
+    <groupId>org.modelmapper</groupId>
+        <artifactId>modelmapper</artifactId>
+        <version>3.1.1</version>
+    </dependency>
+
 
         <!-- Microsoft SQL Server JDBC Driver -->
         <dependency>

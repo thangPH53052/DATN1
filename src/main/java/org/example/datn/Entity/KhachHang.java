@@ -29,7 +29,7 @@ public class KhachHang {
     private List<HoaDon> hoaDons;
 
     @OneToMany(mappedBy = "khachHang")
-    private List<GioHang> gioHangs;
+    private List<GioHangChiTiet> gioHangs;
 
     @OneToMany(mappedBy = "khachHang")
     private List<DanhGia> danhGias;
