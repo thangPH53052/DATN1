@@ -38,11 +38,13 @@ public class SanPhamController {
     private KhuyenMaiService khuyenMaiService;
 
     // Hiển thị danh sách sản phẩm
+    // Hiển thị danh sách sản phẩm có phân trang
     @GetMapping("/view")
-    public String viewSanPham(Model model) {
-        List<SanPhamDTO> list = sanPhamService.getAllSanPham();
-        model.addAttribute("sanPhams", list);
-
+    public String viewSanPham(@RequestParam(defaultValue = "0") int page, Model model) {
+        org.springframework.data.domain.Page<SanPhamDTO> sanPhamPage = sanPhamService.getAllSanPham(page);
+        model.addAttribute("sanPhams", sanPhamPage.getContent());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("totalPages", sanPhamPage.getTotalPages());
         model.addAttribute("danhMucs", danhMucService.getAllDanhMuc());
         model.addAttribute("thuongHieus", thuongHieuService.getAllThuongHieu());
         model.addAttribute("chatLieus", chatLieuService.getAllChatLieu());
@@ -63,10 +65,10 @@ public class SanPhamController {
         return "ViewSanPham/add";
     }
 
-    // ✅ Lưu sản phẩm qua AJAX, trả về ID sản phẩm mới
+    // Lưu sản phẩm và trả về ID
     @PostMapping("/api/save")
     @ResponseBody
-    public Map<String, Integer> apiSaveSanPham(
+    public Integer apiSaveSanPham(
             @RequestParam("ma") String ma,
             @RequestParam("ten") String ten,
             @RequestParam("idDanhMuc") Integer idDanhMuc,
@@ -79,45 +81,38 @@ public class SanPhamController {
             @RequestParam(value = "dungTich", required = false) Float dungTich,
             @RequestParam(value = "kichThuoc", required = false) String kichThuoc,
             @RequestParam("trangThai") Boolean trangThai,
-            @RequestParam("hinhAnhs") MultipartFile[] hinhAnhs) {
-
-        Integer idSanPham = sanPhamService.addSanPham(ma, ten, idDanhMuc, idChatLieu, idLoaiKhoa, idKieuDay,
+            @RequestParam(value = "hinhAnhs", required = false) MultipartFile[] hinhAnhs) {
+        return sanPhamService.addSanPham(ma, ten, idDanhMuc, idChatLieu, idLoaiKhoa, idKieuDay,
                 idThuongHieu, moTa, canNang, dungTich, kichThuoc, trangThai, hinhAnhs);
-
-        return Map.of("id", idSanPham); // Trả JSON để JS đọc đúng
     }
 
-    // API lấy chi tiết sản phẩm để đổ vào form (sử dụng AJAX)
+    // Lấy sản phẩm theo ID
     @GetMapping("/api/{id}")
     @ResponseBody
     public SanPhamDTO getSanPhamDTOById(@PathVariable("id") Integer id) {
         return sanPhamService.getSanPhamDTOById(id);
     }
 
-    // Hiển thị form cập nhật sản phẩm (update.html)
+    // Hiển thị form chỉnh sửa
     @GetMapping("/edit/{id}")
-public String showEditForm(@PathVariable("id") Integer id, Model model) {
-    SanPhamDTO sanPhamDTO = sanPhamService.getSanPhamDTOById(id);
-    if (sanPhamDTO == null) {
-        return "redirect:/san-pham/view";
+    public String showEditForm(@PathVariable("id") Integer id, Model model) {
+        SanPhamDTO sanPhamDTO = sanPhamService.getSanPhamDTOById(id);
+        if (sanPhamDTO == null) {
+            return "redirect:/san-pham/view";
+        }
+
+        model.addAttribute("sanPham", sanPhamDTO);
+        model.addAttribute("danhMucs", danhMucService.getAllDanhMuc());
+        model.addAttribute("thuongHieus", thuongHieuService.getAllThuongHieu());
+        model.addAttribute("chatLieus", chatLieuService.getAllChatLieu());
+        model.addAttribute("loaiKhoas", loaiKhoaService.getAllLoaiKhoa());
+        model.addAttribute("kieuDays", kieuDayService.getAllKieuDay());
+        model.addAttribute("chiTiets", sanPhamChiTietService.getBySanPhamId(id));
+        model.addAttribute("mauSacs", mauSacService.getAllMauSac());
+        model.addAttribute("kichThuocs", kichThuocService.getAllKichThuoc());
+        model.addAttribute("khuyenMais", khuyenMaiService.getAllKhuyenMai());
+        return "ViewSanPham/update";
     }
-
-    model.addAttribute("sanPham", sanPhamDTO);
-    model.addAttribute("danhMucs", danhMucService.getAllDanhMuc());
-    model.addAttribute("thuongHieus", thuongHieuService.getAllThuongHieu());
-    model.addAttribute("chatLieus", chatLieuService.getAllChatLieu());
-    model.addAttribute("loaiKhoas", loaiKhoaService.getAllLoaiKhoa());
-    model.addAttribute("kieuDays", kieuDayService.getAllKieuDay());
-
-    // ✅ Thêm phần dữ liệu để cập nhật chi tiết sản phẩm
-    model.addAttribute("chiTiets", sanPhamChiTietService.getBySanPhamId(id));
-    model.addAttribute("mauSacs", mauSacService.getAllMauSac());
-    model.addAttribute("kichThuocs", kichThuocService.getAllKichThuoc());
-    model.addAttribute("khuyenMais", khuyenMaiService.getAllKhuyenMai());
-
-    return "ViewSanPham/update";
-}
-
 
     // Cập nhật sản phẩm
     @PostMapping("/update/{id}")
@@ -135,9 +130,20 @@ public String showEditForm(@PathVariable("id") Integer id, Model model) {
             @RequestParam(value = "dungTich", required = false) Float dungTich,
             @RequestParam(value = "kichThuoc", required = false) String kichThuoc,
             @RequestParam("trangThai") Boolean trangThai,
-            @RequestParam("hinhAnhs") MultipartFile[] hinhAnhs) {
-        sanPhamService.updateSanPham(id, ma, ten, idDanhMuc, idChatLieu, idLoaiKhoa, idKieuDay, idThuongHieu,
-                moTa, canNang, dungTich, kichThuoc, trangThai, hinhAnhs);
+            @RequestParam(value = "hinhAnhs", required = false) MultipartFile[] hinhAnhs) {
+
+        sanPhamService.updateSanPham(id, ma, ten, idDanhMuc, idChatLieu, idLoaiKhoa,
+                idKieuDay, idThuongHieu, moTa, canNang, dungTich, kichThuoc, trangThai, hinhAnhs);
         return "redirect:/san-pham/view";
+    }
+
+    // Form chi tiết sản phẩm (AJAX)
+    @GetMapping("/san-pham-chi-tiet/add")
+    public String showFormChiTiet(@RequestParam("sanPhamId") Integer sanPhamId, Model model) {
+        model.addAttribute("sanPhamId", sanPhamId);
+        model.addAttribute("mauSacs", mauSacService.getAllMauSac());
+        model.addAttribute("kichThuocs", kichThuocService.getAllKichThuoc());
+        model.addAttribute("khuyenMais", khuyenMaiService.getAllKhuyenMai());
+        return "ViewSanPhamChiTiet/fragment_form_chi_tiet :: formChiTiet";
     }
 }

@@ -62,7 +62,7 @@ public class SanPham {
     @Temporal(TemporalType.TIMESTAMP)
     private Date ngayCapNhat;
 
-    @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "sanPham", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HinhAnhSanPham> hinhAnhList;
 
     public SanPham(Integer id) {

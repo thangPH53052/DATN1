@@ -5,6 +5,9 @@ import org.example.datn.Entity.SanPham;
 import org.example.datn.Repository.*;
 import org.example.datn.dto.SanPhamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,13 +28,15 @@ public class SanPhamService {
     private final HinhAnhSanPhamRepository hinhAnhSanPhamRepository;
 
     @Autowired
-    public SanPhamService(SanPhamRepository sanPhamRepository,
+    public SanPhamService(
+            SanPhamRepository sanPhamRepository,
             DanhMucRepository danhMucRepository,
             ChatLieuRepository chatLieuRepository,
             LoaiKhoaRepository loaiKhoaRepository,
             KieuDayRepository kieuDayRepository,
             ThuongHieuRepository thuongHieuRepository,
             HinhAnhSanPhamRepository hinhAnhSanPhamRepository) {
+
         this.sanPhamRepository = sanPhamRepository;
         this.danhMucRepository = danhMucRepository;
         this.chatLieuRepository = chatLieuRepository;
@@ -40,12 +45,11 @@ public class SanPhamService {
         this.thuongHieuRepository = thuongHieuRepository;
         this.hinhAnhSanPhamRepository = hinhAnhSanPhamRepository;
     }
-
-    public List<SanPhamDTO> getAllSanPham() {
-        return sanPhamRepository.findAll()
-                .stream()
-                .map(this::mapToDTO)
-                .collect(Collectors.toList());
+    public Page<SanPhamDTO> getAllSanPham(int page) {
+        int size = 5;
+        Pageable pageable = PageRequest.of(page, size);
+        Page<SanPham> sanPhamPage = sanPhamRepository.findAll(pageable);
+        return sanPhamPage.map(this::mapToDTO);
     }
 
     private SanPhamDTO mapToDTO(SanPham sp) {
@@ -54,14 +58,12 @@ public class SanPhamService {
         dto.setMa(sp.getMa());
         dto.setTen(sp.getTen());
 
-        // Gán ID nếu có
         dto.setDanhMucId(sp.getDanhMuc() != null ? sp.getDanhMuc().getId() : null);
         dto.setChatLieuId(sp.getChatLieu() != null ? sp.getChatLieu().getId() : null);
         dto.setLoaiKhoaId(sp.getLoaiKhoa() != null ? sp.getLoaiKhoa().getId() : null);
         dto.setKieuDayId(sp.getKieuDay() != null ? sp.getKieuDay().getId() : null);
         dto.setThuongHieuId(sp.getThuongHieu() != null ? sp.getThuongHieu().getId() : null);
 
-        // Gán tên như cũ
         dto.setTenDanhMuc(sp.getDanhMuc() != null ? sp.getDanhMuc().getTen() : null);
         dto.setTenChatLieu(sp.getChatLieu() != null ? sp.getChatLieu().getTen() : null);
         dto.setTenLoaiKhoa(sp.getLoaiKhoa() != null ? sp.getLoaiKhoa().getTen() : null);
@@ -85,8 +87,8 @@ public class SanPhamService {
     }
 
     public Integer addSanPham(String ma, String ten, Integer idDanhMuc, Integer idChatLieu, Integer idLoaiKhoa,
-            Integer idKieuDay, Integer idThuongHieu, String moTa, Float canNang, Float dungTich,
-            String kichThuoc, Boolean trangThai, MultipartFile[] hinhAnhs) {
+                               Integer idKieuDay, Integer idThuongHieu, String moTa, Float canNang, Float dungTich,
+                               String kichThuoc, Boolean trangThai, MultipartFile[] hinhAnhs) {
 
         SanPham sp = new SanPham();
         sp.setMa(ma);
@@ -103,36 +105,35 @@ public class SanPhamService {
         sp.setKieuDay(kieuDayRepository.findById(idKieuDay).orElse(null));
         sp.setThuongHieu(thuongHieuRepository.findById(idThuongHieu).orElse(null));
 
-        sanPhamRepository.save(sp); // Lưu vào DB để có ID
+        sanPhamRepository.save(sp);
 
-        for (MultipartFile file : hinhAnhs) {
-            if (!file.isEmpty()) {
-                String fileName = saveFile(file);
-                HinhAnhSanPham img = new HinhAnhSanPham();
-                img.setSanPham(sp);
-                img.setUrl(fileName);
-                hinhAnhSanPhamRepository.save(img);
+        if (hinhAnhs != null) {
+            for (MultipartFile file : hinhAnhs) {
+                if (!file.isEmpty()) {
+                    String fileName = saveFile(file);
+                    HinhAnhSanPham img = new HinhAnhSanPham();
+                    img.setSanPham(sp);
+                    img.setUrl(fileName);
+                    hinhAnhSanPhamRepository.save(img);
+                }
             }
         }
 
-        return sp.getId(); // Trả về ID sản phẩm mới
+        return sp.getId();
     }
 
     public SanPhamDTO getSanPhamDTOById(Integer id) {
         SanPham sp = sanPhamRepository.findById(id).orElse(null);
-        if (sp == null)
-            return null;
-        return mapToDTO(sp);
+        return sp != null ? mapToDTO(sp) : null;
     }
 
     public void updateSanPham(Integer id, String ma, String ten, Integer idDanhMuc, Integer idChatLieu,
-            Integer idLoaiKhoa, Integer idKieuDay, Integer idThuongHieu, String moTa,
-            Float canNang, Float dungTich, String kichThuoc, Boolean trangThai,
-            MultipartFile[] hinhAnhs) {
+                               Integer idLoaiKhoa, Integer idKieuDay, Integer idThuongHieu, String moTa,
+                               Float canNang, Float dungTich, String kichThuoc, Boolean trangThai,
+                               MultipartFile[] hinhAnhs) {
 
         SanPham sp = sanPhamRepository.findById(id).orElse(null);
-        if (sp == null)
-            return;
+        if (sp == null) return;
 
         sp.setMa(ma);
         sp.setTen(ten);
@@ -150,9 +151,7 @@ public class SanPhamService {
 
         sanPhamRepository.save(sp);
 
-        // Xử lý cập nhật ảnh (Xóa ảnh cũ nếu có ảnh mới)
         if (hinhAnhs != null && hinhAnhs.length > 0 && !hinhAnhs[0].isEmpty()) {
-            // Xóa ảnh cũ trong DB
             hinhAnhSanPhamRepository.deleteAll(sp.getHinhAnhList());
 
             for (MultipartFile file : hinhAnhs) {
@@ -168,24 +167,17 @@ public class SanPhamService {
     }
 
     private String saveFile(MultipartFile file) {
+        String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
+        File dir = new File(uploadDir);
+        if (!dir.exists()) dir.mkdirs();
+
+        String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+        File dest = new File(uploadDir + fileName);
         try {
-            // Đường dẫn thư mục lưu ảnh
-            String uploadDir = System.getProperty("user.dir") + "/uploads/images/";
-
-            File dir = new File(uploadDir);
-            if (!dir.exists()) {
-                dir.mkdirs(); // Tạo thư mục nếu chưa tồn tại
-            }
-
-            // Tạo file đích
-            String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename(); // tránh trùng tên
-            File dest = new File(uploadDir + fileName);
-            file.transferTo(dest); // Ghi file vào ổ đĩa
-
-            return fileName;
+            file.transferTo(dest);
         } catch (IOException e) {
-            throw new RuntimeException("Lỗi khi lưu file ảnh: " + e.getMessage(), e);
+            // Không xử lý lỗi theo yêu cầu
         }
+        return fileName;
     }
-
 }

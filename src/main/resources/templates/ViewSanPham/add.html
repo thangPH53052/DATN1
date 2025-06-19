@@ -13,33 +13,37 @@
 
         form.addEventListener("submit", function (e) {
           e.preventDefault();
-
           const formData = new FormData(form);
 
           fetch("/san-pham/api/save", {
             method: "POST",
             body: formData,
           })
-            .then((response) => response.json())
-            .then((data) => {
-              const idSanPham = data.id;
+            .then((res) => res.text()) // Lấy trực tiếp số nguyên
+            .then((idSanPham) => {
+              idSanPham = parseInt(idSanPham); // ép về int
 
-              // Hiển thị form chi tiết sản phẩm
-              fetch(`/san-pham-chi-tiet/add?sanPhamId=${idSanPham}`)
+              fetch(`/san-pham/san-pham-chi-tiet/add?sanPhamId=${idSanPham}`)
                 .then((res) => res.text())
                 .then((html) => {
-                  document.getElementById("formChiTietContainer").innerHTML =
-                    html;
+                  const container = document.getElementById(
+                    "formChiTietContainer"
+                  );
+                  container.innerHTML = html;
+
                   window.scrollTo({
-                    top: document.getElementById("formChiTietContainer")
-                      .offsetTop,
+                    top: container.offsetTop,
                     behavior: "smooth",
                   });
+
+                  if (window.initChiTietHandlers) {
+                    window.initChiTietHandlers();
+                  }
                 });
             })
-            .catch((error) => {
-              console.error("Lỗi khi lưu sản phẩm:", error);
-              alert("Đã xảy ra lỗi khi lưu sản phẩm!");
+            .catch((err) => {
+              console.error("Lỗi khi thêm sản phẩm:", err);
+              alert("❌ Lỗi khi thêm sản phẩm!");
             });
         });
       });
@@ -52,7 +56,9 @@
 
       <form
         id="addSanPhamForm"
+        method="post"
         enctype="multipart/form-data"
+        th:action="@{/san-pham/api/save}"
         style="width: 60%; margin: auto"
       >
         <div>
@@ -152,7 +158,7 @@
 
         <div>
           <label>Trạng thái:</label>
-          <select name="trangThai" style="width: 100%">
+          <select name="trangThai" required style="width: 100%">
             <option value="true">Đang bán</option>
             <option value="false">Ngừng bán</option>
           </select>
@@ -168,8 +174,47 @@
           <button type="submit">Lưu sản phẩm</button>
         </div>
       </form>
+      <!-- JavaScript cho việc thêm dòng chi tiết sản phẩm -->
+      <script>
+        function initChiTietHandlers() {
+          const container = document.getElementById("chiTietContainer");
+          const addRowBtn = document.getElementById("addRowBtn");
 
-      <!-- Hiển thị form chi tiết sau khi lưu -->
+          if (!container || !addRowBtn) {
+            console.warn("Không tìm thấy chiTietContainer hoặc addRowBtn!");
+            return;
+          }
+
+          addRowBtn.addEventListener("click", function () {
+            const firstRow = container.querySelector(".chi-tiet-row");
+            if (!firstRow) {
+              alert("Không tìm thấy dòng mẫu!");
+              return;
+            }
+
+            const newRow = firstRow.cloneNode(true);
+            newRow.querySelectorAll("input, select").forEach((el) => {
+              if (el.tagName === "SELECT") el.selectedIndex = 0;
+              else el.value = "";
+            });
+
+            container.appendChild(newRow);
+          });
+
+          container.addEventListener("click", function (e) {
+            if (e.target.classList.contains("xoa-dong-btn")) {
+              const rows = container.querySelectorAll(".chi-tiet-row");
+              if (rows.length > 1) {
+                e.target.closest(".chi-tiet-row").remove();
+              } else {
+                alert("Phải có ít nhất 1 dòng!");
+              }
+            }
+          });
+        }
+      </script>
+
+      <!-- Form chi tiết sản phẩm sẽ được hiển thị ở đây -->
       <div id="formChiTietContainer" style="margin-top: 30px"></div>
     </div>
   </body>

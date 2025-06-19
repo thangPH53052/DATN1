@@ -9,8 +9,9 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // Tất cả URL /images/** sẽ map tới thư mục uploads/images/ trong hệ thống
+        String uploadPath = System.getProperty("user.dir") + "/uploads/images/";
+
         registry.addResourceHandler("/images/**")
-                .addResourceLocations("file:" + System.getProperty("user.dir") + "/uploads/images/");
+                .addResourceLocations("file:///" + uploadPath.replace("\\", "/")); // đảm bảo chạy cả Windows và Linux
     }
 }
