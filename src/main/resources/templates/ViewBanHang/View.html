@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Giỏ hàng</title>
+    <style>
+        body {
+            font-family: Arial;
+            margin: 2rem;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 2rem;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .delete {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Giỏ hàng của khách hàng</h1>
+
+<label>Nhập ID khách hàng:
+    <input type="number" id="khachHangId" value="1">
+</label>
+<button onclick="loadGioHang()">Tải giỏ hàng</button>
+
+<table id="gioHangTable" style="display: none;">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>ID Sản phẩm</th>
+            <th>Số lượng</th>
+            <th>Hành động</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    async function loadGioHang() {
+        const id = document.getElementById('khachHangId').value;
+        const table = document.getElementById('gioHangTable');
+        const tbody = table.querySelector('tbody');
+        tbody.innerHTML = '';
+
+        const res = await fetch(`/api/gio-hang/${id}`);
+        const data = await res.json();
+
+        if (data.length === 0) {
+            table.style.display = 'none';
+            alert("Không có sản phẩm nào trong giỏ.");
+            return;
+        }
+
+        table.style.display = 'table';
+
+        data.forEach(sp => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${sp.id}</td>
+                <td>${sp.idSanPhamChiTiet}</td>
+                <td>
+                    <input type="number" value="${sp.soLuong}" min="1" id="soLuong-${sp.id}">
+                </td>
+                <td>
+                    <button onclick="capNhat(${sp.id})">Cập nhật</button>
+                    <button class="delete" onclick="xoa(${sp.id})">Xóa</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    async function capNhat(id) {
+        const soLuong = document.getElementById(`soLuong-${id}`).value;
+        await fetch(`/api/gio-hang/${id}?soLuong=${soLuong}`, {
+            method: 'PUT'
+        });
+        alert('Cập nhật thành công!');
+        loadGioHang();
+    }
+
+    async function xoa(id) {
+        await fetch(`/api/gio-hang/${id}`, {
+            method: 'DELETE'
+        });
+        alert('Đã xóa sản phẩm!');
+        loadGioHang();
+    }
+</script>
+
+</body>
+</html>
