@@ -2,7 +2,12 @@ package org.example.datn.Controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import org.example.datn.Entity.SanPham;
+import org.example.datn.Entity.SanPhamChiTiet;
+import org.example.datn.Repository.SanPhamChiTietRepository;
+import org.example.datn.Response.SanPhamResponse;
 import org.example.datn.Service.*;
 import org.example.datn.dto.SanPhamDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 @RequestMapping("/san-pham")
+@CrossOrigin(origins = "*")
 public class SanPhamController {
 
     @Autowired
@@ -30,6 +36,9 @@ public class SanPhamController {
 
     @Autowired
     private SanPhamChiTietService sanPhamChiTietService;
+    
+    @Autowired
+    private SanPhamChiTietRepository sanPhamChiTietRepository;
     @Autowired
     private MauSacService mauSacService;
     @Autowired
@@ -146,4 +155,28 @@ public class SanPhamController {
         model.addAttribute("khuyenMais", khuyenMaiService.getAllKhuyenMai());
         return "ViewSanPhamChiTiet/fragment_form_chi_tiet :: formChiTiet";
     }
+
+  @GetMapping
+    public List<SanPhamResponse> getAllSanPhamDangBan() {
+        List<SanPhamChiTiet> danhSach = sanPhamChiTietRepository.findAll();
+
+        return danhSach.stream()
+                .filter(spct -> spct.getSoLuong() != null && spct.getSoLuong() > 0) // ✅ sửa cho đúng với entity
+                .map(spct -> {
+                    SanPham sanPham = spct.getSanPham();
+                    String tenSanPham = (sanPham != null) ? sanPham.getTen() : "Không rõ";
+                    String hinhAnh = (sanPham != null && sanPham.getHinhAnhList() != null && !sanPham.getHinhAnhList().isEmpty())
+                            ? sanPham.getHinhAnhList().get(0).getUrl()
+                            : "img/default.jpg"; // ảnh mặc định nếu không có ảnh
+
+                    return new SanPhamResponse(
+                            sanPham != null ? sanPham.getId() : null,
+                            tenSanPham,
+                            spct.getGiaBan(),
+                            hinhAnh
+                    );
+                })
+                .collect(Collectors.toList());
+    }
+
 }

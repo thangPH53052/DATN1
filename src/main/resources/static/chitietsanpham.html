@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>Chi tiết sản phẩm - Thế giới balo</title>
+  <link rel="shortcut icon" href="img/favicon.ico" />
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    crossorigin="anonymous" />
+
+  <!-- Carousel -->
+  <link rel="stylesheet" href="js/owlcarousel/owl.carousel.min.css" />
+  <link rel="stylesheet" href="js/owlcarousel/owl.theme.default.min.css" />
+  <script src="js/Jquery/Jquery.min.js"></script>
+  <script src="js/owlcarousel/owl.carousel.min.js"></script>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="stylesheet" href="css/topnav.css" />
+  <link rel="stylesheet" href="css/header.css" />
+  <link rel="stylesheet" href="css/taikhoan.css" />
+  <link rel="stylesheet" href="css/trangchu.css" />
+  <link rel="stylesheet" href="css/home_products.css" />
+  <link rel="stylesheet" href="css/chitietsanpham.css" />
+  <link rel="stylesheet" href="css/footer.css" />
+
+  <!-- JS -->
+  <script src="data/products.js"></script>
+  <script src="js/classes.js"></script>
+  <script src="js/dungchung.js"></script>
+  <script src="js/chitietsanpham.js"></script>
+</head>
+
+<body>
+  <script> addTopNav(); </script>
+
+  <section>
+    <script> addHeader(); </script>
+
+    <div id="productNotFound" style="min-height: 50vh; text-align: center; margin: 50px; display: none;">
+      <h1 style="color: red; margin-bottom: 10px;">Không tìm thấy sản phẩm</h1>
+      <a href="index.html" style="text-decoration: underline;">Quay lại trang chủ</a>
+    </div>
+
+    <div class="chitietSanpham" style="margin-bottom: 100px">
+      <h1>Balo thời trang cao cấp</h1>
+      <div class="rating"></div>
+
+      <div class="rowdetail group">
+        <div class="picture">
+          <img src="" onclick="opencertain()" />
+        </div>
+
+        <div class="price_sale">
+          <div class="area_price"> </div>
+
+          <div class="ship" style="display: none;">
+            <img src="img/chitietsanpham/clock-152067_960_720.png" />
+            <div>GIAO HÀNG TẬN NHÀ</div>
+          </div>
+
+          <div class="area_promo">
+            <strong>Khuyến mãi</strong>
+            <div class="promo">
+              <img src="img/chitietsanpham/icon-tick.png" />
+              <div id="detailPromo">Tặng móc khóa + freeship toàn quốc</div>
+            </div>
+          </div>
+
+          <div class="policy">
+            <div>
+              <img src="img/chitietsanpham/box.png" />
+              <p>Trong gói hàng: Balo, hóa đơn, phiếu bảo hành</p>
+            </div>
+            <div>
+              <img src="img/chitietsanpham/icon-baohanh.png" />
+              <p>Bảo hành chính hãng 6 tháng.</p>
+            </div>
+            <div class="last">
+              <img src="img/chitietsanpham/1-1.jpg" />
+              <p>1 đổi 1 trong 7 ngày nếu lỗi từ NSX.</p>
+            </div>
+          </div>
+
+          <div class="area_order">
+            <a class="buy_now" onclick="themVaoGioHang(maProduct, nameProduct);">
+              <b><i class="fa fa-cart-plus"></i> Thêm vào giỏ hàng</b>
+              <p>Giao nhanh toàn quốc</p>
+            </a>
+          </div>
+        </div>
+
+        <div class="info_product">
+          <h2>Thông số kỹ thuật</h2>
+          <ul class="info">
+            <li>Chất liệu: Vải dù chống thấm</li>
+            <li>Thương hiệu: Việt Nam</li>
+            <li>Kích thước: 20L – phù hợp laptop 15 inch</li>
+            <li>Loại khóa: Khóa kéo chắc chắn</li>
+            <li>Dây đeo: Có thể điều chỉnh</li>
+            <li>Khuyến mãi: Giảm 10% khi mua từ 2 sản phẩm</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Overlay ảnh lớn -->
+      <div id="overlaycertainimg" class="overlaycertainimg">
+        <div class="close" onclick="closecertain()">&times;</div>
+        <div class="overlaycertainimg-content">
+          <img id="bigimg" class="bigimg" src="img/chitietsanpham/oppo-f9-red-2-400x460.png" />
+          <div class="div_smallimg owl-carousel">
+            <!-- sẽ load hình ảnh từ JS -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="goiYSanPham"></div>
+  </section>
+
+  <script> addContainTaiKhoan(); </script>
+  <div class="footer"><script> addFooter(); </script></div>
+</body>
+
+</html>
