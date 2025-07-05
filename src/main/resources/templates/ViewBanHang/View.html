@@ -2,103 +2,114 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Giỏ hàng</title>
+    <title>Trưng bày sản phẩm</title>
     <style>
         body {
             font-family: Arial;
             margin: 2rem;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 2rem;
+        h1 {
+            margin-bottom: 1rem;
         }
-        th, td {
-            padding: 10px;
+        .san-pham-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        .san-pham {
             border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px;
             text-align: center;
+            position: relative;
+            transition: transform 0.2s;
         }
-        button {
+        .san-pham:hover {
+            transform: scale(1.02);
+        }
+        .san-pham img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .them-btn {
+            display: none;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
             padding: 5px 10px;
+            background-color: green;
+            color: white;
+            border: none;
+            border-radius: 4px;
             cursor: pointer;
         }
-        .delete {
-            color: red;
+        .san-pham:hover .them-btn {
+            display: block;
         }
     </style>
 </head>
 <body>
 
-<h1>Giỏ hàng của khách hàng</h1>
-
-<label>Nhập ID khách hàng:
-    <input type="number" id="khachHangId" value="1">
-</label>
-<button onclick="loadGioHang()">Tải giỏ hàng</button>
-
-<table id="gioHangTable" style="display: none;">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>ID Sản phẩm</th>
-            <th>Số lượng</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+<h1>Trưng bày sản phẩm (Đang bán)</h1>
+<div class="san-pham-container" id="danhSachSanPham"></div>
 
 <script>
-    async function loadGioHang() {
-        const id = document.getElementById('khachHangId').value;
-        const table = document.getElementById('gioHangTable');
-        const tbody = table.querySelector('tbody');
-        tbody.innerHTML = '';
+    async function loadSanPham() {
+        const container = document.getElementById('danhSachSanPham');
+        container.innerHTML = '';
 
-        const res = await fetch(`/api/gio-hang/${id}`);
-        const data = await res.json();
+        try {
+            const res = await fetch('/san-pham/api/dang-ban');
+            const data = await res.json();
 
-        if (data.length === 0) {
-            table.style.display = 'none';
-            alert("Không có sản phẩm nào trong giỏ.");
-            return;
+            if (data.length === 0) {
+                container.innerHTML = '<p>Không có sản phẩm nào đang bán.</p>';
+                return;
+            }
+
+            data.forEach(sp => {
+                const div = document.createElement('div');
+                div.className = 'san-pham';
+                div.innerHTML = `
+                    <img src="${sp.hinhAnh}" alt="${sp.tenSanPham}">
+                    <h3>${sp.tenSanPham}</h3>
+                    <p>Giá: ${sp.giaBan.toLocaleString()} VND</p>
+                    <p>Kho: ${sp.soLuongTon}</p>
+                    <button class="them-btn" onclick="themVaoGio(${sp.id})">Thêm vào giỏ hàng</button>
+                `;
+                container.appendChild(div);
+            });
+
+        } catch (err) {
+            console.error(err);
+            container.innerHTML = '<p>Lỗi tải sản phẩm.</p>';
         }
-
-        table.style.display = 'table';
-
-        data.forEach(sp => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td>${sp.id}</td>
-                <td>${sp.idSanPhamChiTiet}</td>
-                <td>
-                    <input type="number" value="${sp.soLuong}" min="1" id="soLuong-${sp.id}">
-                </td>
-                <td>
-                    <button onclick="capNhat(${sp.id})">Cập nhật</button>
-                    <button class="delete" onclick="xoa(${sp.id})">Xóa</button>
-                </td>
-            `;
-            tbody.appendChild(row);
-        });
     }
 
-    async function capNhat(id) {
-        const soLuong = document.getElementById(`soLuong-${id}`).value;
-        await fetch(`/api/gio-hang/${id}?soLuong=${soLuong}`, {
-            method: 'PUT'
+    async function themVaoGio(sanPhamId) {
+        const khachHangId = 1;
+        const res = await fetch(`/api/gio-hang/them`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                khachHangId: khachHangId,
+                sanPhamChiTietId: sanPhamId,
+                soLuong: 1
+            })
         });
-        alert('Cập nhật thành công!');
-        loadGioHang();
+
+        if (res.ok) {
+            alert('Đã thêm vào giỏ hàng!');
+        } else {
+            alert('Thêm thất bại!');
+        }
     }
 
-    async function xoa(id) {
-        await fetch(`/api/gio-hang/${id}`, {
-            method: 'DELETE'
-        });
-        alert('Đã xóa sản phẩm!');
-        loadGioHang();
-    }
+    loadSanPham();
 </script>
 
 </body>
